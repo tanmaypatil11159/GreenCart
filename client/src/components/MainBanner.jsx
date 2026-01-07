@@ -1,0 +1,30 @@
+import React from 'react'
+import { assets } from '../assets/assets'
+import { Link } from 'react-router-dom'
+
+export default function MainBanner() {
+  return (
+    <div className='relative'>
+      <img src={assets.main_banner_bg} alt="banner" className='w-full hidden md:block'/>
+      <img src={assets.main_banner_bg_sm} alt="bannersm" className='w-full md:hidden'/>
+      <div className="absolute inset-0 flex flex-col items-center md:items-start justify-end md:justify-center pb-24 md:pb-0 px-4 md:pl-18 lg:pl-24">
+        <h1 className='text-3xl md:text-4xl lg:text-5xl font-bold text-center md:text-left max-w-72 md:max-w-80 lg:max-w-105 leading-tight lg:leading-[1.3]'>
+           Freshness You Can Trust, Savings You Will Love!
+        </h1>
+     
+
+      <div className='flex items-center mt-6 font-medium'>
+        <Link to={'/products'} className='group flex item-center gap-2 px-7 md:px-9 py-3 bg-primary hover:bg-primary-dull transiton rounded text-white cursor-pointer'>
+        Shop Now
+        <img className='md:hidden transition group-focus:traslate-x-1' src={assets.white_arrow_icon} alt="arrow" />
+        </Link>
+
+        <Link to={'/products'} className='group md:flex hidden item-center gap-2 px-7 md:px-9 py-3  cursor-pointer'>
+        Explore Deals
+        <img className='transition group-focus:traslate-x-1' src={assets.black_arrow_icon} alt="arrow" />
+        </Link>
+      </div>
+       </div>
+    </div>
+  )
+}
