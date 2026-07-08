@@ -18,7 +18,7 @@ await connectDB();
 await connectClouldinary();
 
 // Allows multiple origins
-const allowedOrigins = ['http://localhost:5173'];
+const allowedOrigins = process.env.CLIENT_URL.split(',').map(origin => origin.trim());
 
 // middleware configurations
 app.use(express.json());
