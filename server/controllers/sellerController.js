@@ -1,5 +1,12 @@
 import jwt from "jsonwebtoken";
 
+const getCookieOptions = () => ({
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+});
+
 // Seller Login, path: /api/seller/login
 
 export const sellerlogin = async (req, res) => {
@@ -12,12 +19,7 @@ try {
             { expiresIn: "7d" }
         );
     
-        res.cookie("sellerToken", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+        res.cookie("sellerToken", token, getCookieOptions());
         return res.json({success: true,message: "Logged In",});
     
         } else {
@@ -45,11 +47,7 @@ export const isSellerAuth = async (req, res)=> {
 
 export const sellerLogout = async (req, res) => {
     try {
-        res.clearCookie('sellerToken', {
-            httpOnly: true, 
-            sucure: process.env.NODE_ENV === 'production', 
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-        })
+        res.clearCookie('sellerToken', getCookieOptions())
         return res.json({success: true, message: "Logged Out"})
     } catch (error) {
         console.log(error.message);

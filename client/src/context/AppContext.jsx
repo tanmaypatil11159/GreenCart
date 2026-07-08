@@ -6,7 +6,8 @@ import axios from "axios"
 
 // Backend connections
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+const backendUrl = import.meta.env.VITE_BACKEND_URL?.trim().replace(/\/$/, "");
+axios.defaults.baseURL = backendUrl || "";
 
 export const AppContext = createContext();
 

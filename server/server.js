@@ -14,16 +14,38 @@ import orderRouter from './routes/orderRoute.js';
 const app = express();
 const port = process.env.PORT || 4000;
 
+const configuredOrigins = (process.env.CLIENT_URL || "")
+    .split(',')
+    .map(origin => origin.trim().replace(/\/$/, ""))
+    .filter(Boolean);
+
+const allowedOrigins = [...new Set([
+    ...configuredOrigins,
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+])];
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ''))) {
+            callback(null, true);
+            return;
+        }
+        callback(null, false);
+    },
+    credentials: true,
+};
+
 await connectDB();
 await connectClouldinary();
-
-// Allows multiple origins
-const allowedOrigins = process.env.CLIENT_URL.split(',').map(origin => origin.trim());
 
 // middleware configurations
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({origin: allowedOrigins, credentials: true}))
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.get('/', (req, res)=> res.send("API is working!"));
 app.use('/api/user', userRouter);
@@ -33,6 +55,10 @@ app.use('/api/cart', cartRouter);
 app.use('/api/address', addressRouter);
 app.use('/api/order', orderRouter);
 
-app.listen(port, ()=> {
-    console.log(`Server is running on http://localhost:${port}`)
-})
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(port, ()=> {
+        console.log(`Server is running on port ${port}`)
+    })
+}
+
+export default app;

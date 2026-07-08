@@ -4,6 +4,12 @@ import User from "../models/User.js";
 import bcrypt, { truncates } from "bcryptjs"
 import jwt from "jsonwebtoken"
 
+const getCookieOptions = () => ({
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+});
 
 // user registeration, path: /api/user/register
 export const register = async (req, res)=>{
@@ -26,12 +32,7 @@ export const register = async (req, res)=>{
         const user = await User.create({name, email, password: hashedPassword})
         const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: '7d'})
 
-        res.cookie('token', token, {
-            httpOnly: true, // to prevent javascript to access cookie
-            sucure: process.env.NODE_ENV === 'production', // secures the cookies in production
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', // CFRS protection
-            maxAge: 7 * 24 * 60 * 60 * 1000,  // cookies exspiring time
-        })
+        res.cookie('token', token, getCookieOptions())
         return res.json({success: true, user: {name: user.name, email: user.email }})
 
     } catch (error) {
@@ -60,12 +61,7 @@ export const login = async (req,res)=> {
 
                 const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: '7d'})
 
-        res.cookie('token', token, {
-            httpOnly: true, 
-            sucure: process.env.NODE_ENV === 'production', 
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', 
-            maxAge: 7 * 24 * 60 * 60 * 1000,  
-        })
+        res.cookie('token', token, getCookieOptions())
         return res.json({success: true, user: {name: user.name, email: user.email }})
 
 
@@ -93,11 +89,7 @@ export const isAuth = async (req, res)=> {
 
 export const logout = async (req, res) => {
     try {
-        res.clearCookie('token', {
-            httpOnly: true, 
-            sucure: process.env.NODE_ENV === 'production', 
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-        })
+        res.clearCookie('token', getCookieOptions())
         return res.json({success: true, message: "Logged Out"})
     } catch (error) {
         console.log(error.message);
