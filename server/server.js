@@ -45,7 +45,7 @@ await connectClouldinary();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.options(/(.*)/, cors(corsOptions));
 
 app.get('/', (req, res)=> res.send("API is working!"));
 app.use('/api/user', userRouter);
