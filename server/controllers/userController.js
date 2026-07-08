@@ -4,12 +4,16 @@ import User from "../models/User.js";
 import bcrypt, { truncates } from "bcryptjs"
 import jwt from "jsonwebtoken"
 
-const getCookieOptions = () => ({
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-});
+const getCookieOptions = () => {
+    const isProduction = process.env.NODE_ENV === 'production';
+    return {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+};
 
 // user registeration, path: /api/user/register
 export const register = async (req, res)=>{

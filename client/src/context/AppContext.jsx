@@ -4,6 +4,19 @@ import { dummyProducts } from "../assets/assets";
 import toast from "react-hot-toast";
 import axios from "axios"
 
+const authErrorPattern = /(not authorized|not authorised)/i;
+const originalToastError = toast.error;
+
+if (!toast.__greenCartAuthPatched) {
+    toast.error = (message, options) => {
+        if (typeof message === "string" && authErrorPattern.test(message)) {
+            return;
+        }
+        return originalToastError(message, options);
+    };
+    toast.__greenCartAuthPatched = true;
+}
+
 // Backend connections
 axios.defaults.withCredentials = true;
 const backendUrl = import.meta.env.VITE_BACKEND_URL?.trim().replace(/\/$/, "");
